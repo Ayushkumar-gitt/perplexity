@@ -26,7 +26,7 @@ export async function registerUser(request, response) {
         to: email,
         subject: "Welcome to Perplexity",
         html: `<p>Hello ${username},</p><p>Thank you for registering at <strong>Perplexity</strong>! We're excited to have you on board.</p>
-        <a href="http://localhost:3000/auth/verify-email?token=${emailToken}">Click here to verify your email</a>
+        <a href="${process.env.BACKEND_URL}/auth/verify-email?token=${emailToken}">Click here to verify your email</a>
         <p>Best regards,<br>The Perplexity Team</p>`
     })
 
