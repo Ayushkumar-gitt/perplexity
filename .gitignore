@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Build output
+Frontend/dist/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Uploads (user-generated content)
+Backend/uploads/*
+!Backend/uploads/.gitkeep
+
+# Lock files at root level (each subfolder has its own)
+/package-lock.json

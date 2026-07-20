@@ -1,0 +1,16 @@
+{
+  "name": "perplexity-clone",
+  "version": "1.0.0",
+  "description": "Perplexity AI-powered search engine clone",
+  "private": true,
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "install:all": "cd Frontend && npm install && cd ../Backend && npm install",
+    "build": "cd Frontend && npm install && npm run build",
+    "start": "cd Backend && node server.js",
+    "dev:frontend": "cd Frontend && npm run dev",
+    "dev:backend": "cd Backend && node server.js"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "dependencies": {
+    "@tavily/core": "^0.7.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  },
+  "name": "genai",
+  "version": "1.0.0",
+  "description": "",
+  "main": "tavely.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
