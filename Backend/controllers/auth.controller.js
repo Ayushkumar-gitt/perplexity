@@ -99,7 +99,12 @@ export async function loginUser(request, response) {
         username: user.username
     }, process.env.JWT_SECRET)
 
-    response.cookie("token", token)
+    response.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    })
 
     response.status(200).json({
         message: "user logged in successfully",
@@ -132,7 +137,11 @@ export async function getme(request, response) {
 }
 
 export async function logoutUser(request, response) {
-    response.clearCookie("token")
+    response.clearCookie("token", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+    })
     response.status(200).json({
         message: "user logged out successfully",
         success: true
