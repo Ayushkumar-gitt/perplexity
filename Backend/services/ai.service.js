@@ -41,7 +41,7 @@ export async function generateResponse(messages, imageFilePath = null) {
             const base64Image = imageBuffer.toString('base64');
             const mimeMap = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.gif': 'image/gif', '.webp': 'image/webp', '.svg': 'image/svg+xml' };
             const mimeType = mimeMap[ext] || 'image/jpeg';
-
+            
             // Build the conversation history for context
             const historyMessages = messages.slice(0, -1).map((msg) => {
                 if (msg.role == "user") {
