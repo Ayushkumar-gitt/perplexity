@@ -1,5 +1,9 @@
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
+import dns from 'dns';
+
+// Force IPv4 globally — Render cannot make outbound IPv6 connections
+dns.setDefaultResultOrder('ipv4first');
 
 // --- OAuth2 approach (commented out — token expired) ---
 // const transporter = nodemailer.createTransport({
@@ -27,7 +31,7 @@ const transporter = nodemailer.createTransport({
 
 transporter.verify().then(() => {
     console.log("Email transporter is ready");
-    
+
 }).catch((error) => {
         console.error("Error occurred while verifying email transporter:", error);
     });
