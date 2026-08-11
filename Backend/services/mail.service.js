@@ -13,9 +13,12 @@ import jwt from "jsonwebtoken";
 //     }
 // })
 
-// --- App Password approach ---
+// --- App Password approach (IPv4 forced for Render compatibility) ---
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, // true for port 465
+    family: 4,    // force IPv4 — Render does not support IPv6 outbound
     auth: {
         user: process.env.GOOGLE_USER,
         pass: process.env.GMAIL_APP_PASSWORD
