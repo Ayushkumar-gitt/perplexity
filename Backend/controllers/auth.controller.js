@@ -22,13 +22,18 @@ export async function registerUser(request, response) {
         email: user.email
     }, process.env.JWT_SECRET)
 
-    await sendEmail({
-        to: email,
-        subject: "Welcome to Perplexity",
-        html: `<p>Hello ${username},</p><p>Thank you for registering at <strong>Perplexity</strong>! We're excited to have you on board.</p>
-        <a href="${process.env.BACKEND_URL}/auth/verify-email?token=${emailToken}">Click here to verify your email</a>
-        <p>Best regards,<br>The Perplexity Team</p>`
-    })
+    // Send verification email — don't let email failure crash registration
+    try {
+        await sendEmail({
+            to: email,
+            subject: "Welcome to Perplexity",
+            html: `<p>Hello ${username},</p><p>Thank you for registering at <strong>Perplexity</strong>! We're excited to have you on board.</p>
+            <a href="${process.env.BACKEND_URL}/auth/verify-email?token=${emailToken}">Click here to verify your email</a>
+            <p>Best regards,<br>The Perplexity Team</p>`
+        })
+    } catch (emailError) {
+        console.error("Failed to send verification email:", emailError.message);
+    }
 
     response.status(201).json({
         message: "user registered successfully",

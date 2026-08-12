@@ -1,50 +1,55 @@
 import nodemailer from "nodemailer";
-import jwt from "jsonwebtoken";
 import dns from 'dns';
+import { promisify } from 'util';
 
-// Force IPv4 globally — Render cannot make outbound IPv6 connections
-dns.setDefaultResultOrder('ipv4first');
+const resolve4 = promisify(dns.resolve4);
 
-// --- OAuth2 approach (commented out — token expired) ---
-// const transporter = nodemailer.createTransport({
-//     service: 'gmail',
-//     auth: {
-//         type: 'OAuth2',
-//         user: process.env.GOOGLE_USER,
-//         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-//         refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
-//         clientId: process.env.GOOGLE_CLIENT_ID
-//     }
-// })
+// ---------------------------------------------------------------------------
+// Lazy transporter — resolves smtp.gmail.com to an IPv4 address ourselves
+// so nodemailer never gets a chance to pick an IPv6 address.
+// Render's outbound IPv6 is blocked, which causes ENETUNREACH errors.
+// ---------------------------------------------------------------------------
 
-// --- App Password approach (IPv4 forced for Render compatibility) ---
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true, // true for port 465
-    family: 4,    // force IPv4 — Render does not support IPv6 outbound
-    auth: {
-        user: process.env.GOOGLE_USER,
-        pass: process.env.GMAIL_APP_PASSWORD
-    }
-})
+let _transporter = null;
 
-transporter.verify().then(() => {
-    console.log("Email transporter is ready");
+async function getTransporter() {
+    if (_transporter) return _transporter;
 
-}).catch((error) => {
-        console.error("Error occurred while verifying email transporter:", error);
+    // dns.resolve4 queries for A records only → guaranteed IPv4
+    const ipv4Addresses = await resolve4('smtp.gmail.com');
+    const smtpIp = ipv4Addresses[0];
+    console.log(`Resolved smtp.gmail.com → ${smtpIp}`);
+
+    _transporter = nodemailer.createTransport({
+        host: smtpIp,            // raw IPv4 address — no DNS resolution needed
+        port: 465,
+        secure: true,
+        auth: {
+            user: process.env.GOOGLE_USER,
+            pass: process.env.GMAIL_APP_PASSWORD
+        },
+        tls: {
+            servername: 'smtp.gmail.com'  // required for cert validation when host is an IP
+        }
     });
 
+    // Quick connectivity check (non-blocking)
+    _transporter.verify()
+        .then(() => console.log("Email transporter is ready"))
+        .catch((err) => console.error("Email transporter verify failed:", err.message));
+
+    return _transporter;
+}
+
 export async function sendEmail({ to, html, subject, text }) {
+    const transporter = await getTransporter();
     const mailOptions = {
         from: process.env.GOOGLE_USER,
         to,
         subject,
         text,
         html
-    }
+    };
     const details = await transporter.sendMail(mailOptions);
     console.log("Email sent", details);
-
 }
