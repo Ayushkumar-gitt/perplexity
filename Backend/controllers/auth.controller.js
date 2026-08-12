@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import userModel from "../models/user.model.js";
-import { sendEmail } from "../services/mail.service.js";
+// import { sendEmail } from "../services/mail.service.js";
 import jwt from 'jsonwebtoken'
 
 export async function registerUser(request, response) {
@@ -18,22 +18,22 @@ export async function registerUser(request, response) {
     const hash = await bcrypt.hash(password, 10);
     const user = await userModel.create({ username, email, password: hash });
 
-    const emailToken = jwt.sign({
-        email: user.email
-    }, process.env.JWT_SECRET)
+    // const emailToken = jwt.sign({
+    //     email: user.email
+    // }, process.env.JWT_SECRET)
 
-    // Send verification email — don't let email failure crash registration
-    try {
-        await sendEmail({
-            to: email,
-            subject: "Welcome to Perplexity",
-            html: `<p>Hello ${username},</p><p>Thank you for registering at <strong>Perplexity</strong>! We're excited to have you on board.</p>
-            <a href="${process.env.BACKEND_URL}/auth/verify-email?token=${emailToken}">Click here to verify your email</a>
-            <p>Best regards,<br>The Perplexity Team</p>`
-        })
-    } catch (emailError) {
-        console.error("Failed to send verification email:", emailError.message);
-    }
+    // // Send verification email — don't let email failure crash registration
+    // try {
+    //     await sendEmail({
+    //         to: email,
+    //         subject: "Welcome to Perplexity",
+    //         html: `<p>Hello ${username},</p><p>Thank you for registering at <strong>Perplexity</strong>! We're excited to have you on board.</p>
+    //         <a href="${process.env.BACKEND_URL}/auth/verify-email?token=${emailToken}">Click here to verify your email</a>
+    //         <p>Best regards,<br>The Perplexity Team</p>`
+    //     })
+    // } catch (emailError) {
+    //     console.error("Failed to send verification email:", emailError.message);
+    // }
 
     response.status(201).json({
         message: "user registered successfully",
