@@ -45,6 +45,7 @@ export async function registerUser(request, response) {
     })
 }
 
+
 export async function verifyEmail(request, response) {
     const { token } = request.query;
 
